@@ -12,7 +12,6 @@ FROM alpine:3.20 as runtime
 WORKDIR /app
 
 COPY --from=builder /app/server ./server
-COPY ./i18n ./i18n
 
 EXPOSE 8080
 
