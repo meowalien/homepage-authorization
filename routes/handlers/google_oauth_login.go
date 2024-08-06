@@ -53,10 +53,11 @@ func GoogleOauthLogin(c *gin.Context) {
 	}
 
 	//c.SetSameSite(http.SameSiteNoneMode)
-	c.SetSameSite(http.SameSiteLaxMode)
+	//c.SetSameSite(http.SameSiteLaxMode)
 	// Set the cookie
-	c.SetCookie("token", signedToken, 3600, "/", ".meowalien.com", false, true)
+	//c.SetCookie("token", signedToken, 3600, "/", ".meowalien.com", false, true)
 	c.SetCookie("token", signedToken, 3600, "/", ".meowalien.com", true, true)
-	c.SetCookie("token", signedToken, 3600, "/", "localhost", false, true)
+	//c.SetCookie("token", signedToken, 3600, "/", "api.meowalien.com", true, true)
+	//c.SetCookie("token", signedToken, 3600, "/", "localhost", false, true)
 	c.Status(http.StatusOK)
 }
