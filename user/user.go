@@ -2,22 +2,24 @@ package user
 
 import (
 	"database/sql"
-	"google.golang.org/api/oauth2/v2"
+	"fmt"
+	"homepage-authorization/oauth"
 	"homepage-authorization/postgresql"
 )
 
-func GetUserIDByUserInfo(userInfo *oauth2.Userinfo) (string, error) {
+func GetUserIDByUserInfo(userInfo oauth.GoogleUserInfo) (string, error) {
 	db := postgresql.GetCollection()
 	var userID string
 
-	err := db.QueryRow("SELECT id FROM users WHERE google_id = $1;", userInfo.Id).Scan(&userID)
+	err := db.QueryRow("SELECT id FROM users WHERE email = $1;", userInfo.Email).Scan(&userID)
 	if err != nil {
 		if err == sql.ErrNoRows {
+			fmt.Println("User does not exist, creating a new user")
 			// User does not exist, create a new user
 			err = db.QueryRow(
-				`INSERT INTO users (google_id, email, name, picture_url) 
-				VALUES ($1, $2, $3, $4) RETURNING id;`,
-				userInfo.Id, userInfo.Email, userInfo.Name, userInfo.Picture,
+				`INSERT INTO users ( email, name) 
+				VALUES ($1, $2) RETURNING id;`,
+				userInfo.Email, userInfo.Name,
 			).Scan(&userID)
 			if err != nil {
 				return "", err

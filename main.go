@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"homepage-authorization/oauth"
 	"homepage-authorization/postgresql"
 	"homepage-authorization/routes"
 	"homepage-authorization/token"
@@ -33,6 +34,7 @@ func main() {
 	defer postgresql.DisconnectDB()
 	token.InitSignKey(viper.GetString("token.privateKeyPath"))
 	token.InitVerifyKey(viper.GetString("token.publicKeyPath"))
+	oauth.Init()
 
 	fmt.Println("Successfully connected to the database!")
 
