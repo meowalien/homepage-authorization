@@ -9,8 +9,8 @@ const (
 	DefaultExpireDuration = time.Hour * 72 // 3 days
 )
 
-func DefaultClaims() jwt.MapClaims {
+func DefaultClaims(exp time.Duration) jwt.MapClaims {
 	return jwt.MapClaims{
-		"exp": time.Now().Add(DefaultExpireDuration).Unix(),
+		"exp": time.Now().Add(exp).Unix(),
 	}
 }

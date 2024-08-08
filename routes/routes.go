@@ -22,10 +22,14 @@ func SetupRouter() *gin.Engine {
 		c.Status(http.StatusOK)
 	})
 
-	i18nGroup := r.Group("/login")
-	oauthGroup := i18nGroup.Group("/oauth")
+	authGroup := r.Group("/auth")
 	{
-		oauthGroup.POST("/google", handlers.GoogleOauthLogin)
+		loginGroup := authGroup.Group("/login")
+		{
+			loginGroup.POST("/google", handlers.GoogleOauthLogin())
+		}
+
+		authGroup.POST("/logout", handlers.CleanUpTokenCookie())
 	}
 
 	return r

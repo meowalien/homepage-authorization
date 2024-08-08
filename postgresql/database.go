@@ -32,6 +32,7 @@ func ConnectDB() {
 	if err != nil {
 		logrus.Fatalf("Failed to ping DB: %v", err)
 	}
+	logrus.Infof("Successfully connected to the database!")
 }
 
 func DisconnectDB() {
@@ -41,6 +42,6 @@ func DisconnectDB() {
 	logrus.Println("Disconnected from DB!")
 }
 
-func GetCollection() *sql.DB {
+func GetClient() *sql.DB {
 	return client
 }
