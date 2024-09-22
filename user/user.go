@@ -16,6 +16,36 @@ type User struct {
 	Roles []string
 }
 
+func GetUserByUserID(userID string) (User, error) {
+	db := postgresql.GetClient()
+	var user User
+
+	tx, err := db.Begin()
+	if err != nil {
+		return User{}, err
+	}
+	defer tx.Rollback()
+
+	user, err = findUserByID(tx, userID)
+	if err != nil {
+		return User{}, fmt.Errorf("failed to find user by ID: %w", err)
+	}
+	user.Roles, err = getUserRoles(tx, user.ID)
+	if err != nil {
+		return User{}, fmt.Errorf("failed to get user roles: %w", err)
+	}
+	return user, nil
+}
+
+func findUserByID(tx *sql.Tx, id string) (User, error) {
+	var user User
+	err := tx.QueryRow("SELECT id, email, name FROM users WHERE id = $1;", id).Scan(&user.ID, &user.Email, &user.Name)
+	if err != nil {
+		return User{}, err
+	}
+	return user, nil
+}
+
 func GetUserByUserInfo(userInfo oauth.GoogleUserInfo) (User, error) {
 	db := postgresql.GetClient()
 	var user User
@@ -32,21 +62,21 @@ func GetUserByUserInfo(userInfo oauth.GoogleUserInfo) (User, error) {
 			logrus.Debugf("User does not exist, creating a new user: %s", userInfo.Email)
 			user, err = createUser(tx, userInfo)
 			if err != nil {
-				return User{}, fmt.Errorf("failed to create user: %v", err)
+				return User{}, fmt.Errorf("failed to create user: %w", err)
 			}
 
 			err = assignRoleToUser(tx, user.ID, role.Reader)
 			if err != nil {
-				return User{}, fmt.Errorf("failed to assign role to user: %v", err)
+				return User{}, fmt.Errorf("failed to assign role to user: %w", err)
 			}
 			user.Roles = append(user.Roles, "read")
 		} else {
-			return User{}, fmt.Errorf("failed to find user by email: %v", err)
+			return User{}, fmt.Errorf("failed to find user by email: %w", err)
 		}
 	} else {
 		user.Roles, err = getUserRoles(tx, user.ID)
 		if err != nil {
-			return User{}, fmt.Errorf("failed to get user roles: %v", err)
+			return User{}, fmt.Errorf("failed to get user roles: %w", err)
 		}
 	}
 

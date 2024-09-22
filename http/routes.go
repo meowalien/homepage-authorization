@@ -1,10 +1,10 @@
-package routes
+package http
 
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"homepage-authorization/routes/handlers"
-	"homepage-authorization/routes/middleware"
+	"homepage-authorization/http/handlers"
+	"homepage-authorization/http/middleware"
 	"net/http"
 )
 
@@ -30,6 +30,11 @@ func SetupRouter() *gin.Engine {
 		}
 
 		authGroup.POST("/logout", handlers.CleanUpTokenCookie())
+	}
+
+	debugGroup := r.Group("/debug")
+	{
+		debugGroup.POST("/login", handlers.DebugLogin())
 	}
 
 	return r

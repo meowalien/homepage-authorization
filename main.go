@@ -4,12 +4,11 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"homepage-authorization/config"
+	"homepage-authorization/http"
 	"homepage-authorization/log"
 	"homepage-authorization/oauth"
 	"homepage-authorization/postgresql"
 	"homepage-authorization/quit"
-	"homepage-authorization/routes"
-	"homepage-authorization/server"
 	"homepage-authorization/token"
 )
 
@@ -23,11 +22,11 @@ func main() {
 	token.InitVerifyKey(viper.GetString("token.publicKeyPath"))
 	oauth.Init()
 
-	r := routes.SetupRouter()
-	srv := server.StartServer(r)
+	r := http.SetupRouter()
+	srv := http.StartServer(r)
 
 	quit.WaitForQuitSignal()
 
-	server.ShutdownServer(srv)
+	http.ShutdownServer(srv)
 
 }
